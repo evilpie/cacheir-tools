@@ -67,53 +67,27 @@ class DefaultMap extends Map {
   }
 }
 
-const kinds = [
-    "None",
-    "Native",
-    "Unboxed",
-    "UnboxedExpando",
-    "TypedObject",
-    "ObjectLength",
-    "ModuleNamespace",
-    "WindowProxy",
-    "GenericProxy",
-    "DOMProxyExpando",
-    "DOMProxyShadowed",
-    "DOMProxyUnshadowed",
-    "Primitive",
-    "StringChar",
-    "StringLength",
-    "MagicArgumentName",
-    "MagicArgument",
-    "ArgumentsObjectArg",
-    "DenseElement",
-    "DenseElementHole",
-    "UnboxedArrayElement",
-    "TypedElement",
-    "ProxyElement"
-];
-
 function showObjects(objects) {
     function showObject(obj) {
         let table = document.createElement("table");
         table.innerHTML = `
         <tr>
-            <td>Type</td><td>${obj.type}${obj.ic ? " <b>" + kinds[obj.ic.kind] + "</b>" : ""}<td>
+            <td>Type</td><td>${obj.name}<b>${obj.attached ? obj.attached : ""}<td>
         </tr>
         <tr>
-            <td>Location</td><td>${obj.where.file}:<b>${obj.where.line}</b></td>
+            <td>Location</td><td>${obj.file}:<b>${obj.line}</b></td>
         </tr>
         <tr>
-            <td>PC</td><td>${obj.where.pc}</td>
+            <td>PC</td><td>${obj.pc}</td>
         </tr>
         <tr>
             <td>Property</td><td><i>${obj.property.type}</i> ${obj.property.value !== undefined ? obj.property.value : ""}</td>
         </tr>
         <tr>
-            <td>Value</td><td><i>${obj.value.type}</i></td>
+            <td>Base</td><td><i>${obj.base.type}</i> ${base.property.value !== undefined ? base.property.value : ""}</td>
         </tr>
         `;
-        if (obj.ic === null)
+        if (!obj.attached)
             table.style.backgroundColor = "#f48d73";
         return table;
     }
@@ -181,18 +155,18 @@ function analyze(objects, filter) {
     let failures = 0
 
     let regexp = new RegExp(filter);
-    objects = objects.filter(obj => regexp.test(obj.where.file));
+    objects = objects.filter(obj => regexp.test(obj.file));
 
     for (let object of objects) {
-        types.set(object.type, types.get(object.type) + 1);
+        types.set(object.name, types.get(object.name) + 1);
 
-        if (object.ic === null) {
+        if (!object.attached) {
             failures++;
         }
     }
 
-    for (let [type, count] of types) {
-        $("#stats").innerHTML += `<tr><td>${type}</td><td>${count}</td></tr>`;
+    for (let [name, count] of types) {
+        $("#stats").innerHTML += `<tr><td>${name}</td><td>${count}</td></tr>`;
     }
 
     $("#entries").textContent = objects.length;
@@ -205,27 +179,30 @@ function analyze(objects, filter) {
     }, 20);
 
     sortBy($("#failed"), objects, obj => {
-        if (obj.ic !== null)
+        if (obj.attached)
             return undefined;
 
-        return `${obj.where.file}:${obj.where.line} (pc: ${obj.where.pc})`;
+        return `${obj.file}:${obj.line} (pc: ${obj.pc})`;
     });
 
     sortBy($("#locations"), objects, obj => {
-        return `${obj.where.file}:${obj.where.line} (pc: ${obj.where.pc})`;
+        return `${obj.file}:${obj.line} (pc: ${obj.pc})`;
     });
 
     sortBy($("#kinds"), objects, obj => {
-        if (obj.ic === null)
-            return undefined;
-        return kinds[obj.ic.kind];
+        return obj.attached;
     })
 }
 
 $("form").addEventListener("submit", (event) => {
     const reader = new FileReader()
     reader.onload = (event) => {
-        const text = "[" + event.target.result.slice(0, -2) + "]";
+        let text = event.target.result;
+        // Sometimes the destructor doesn't seem to run
+        if (!text.endsWith("]")) {
+            text = text + "]";
+        }
+
         const json = JSON.parse(text);
         analyze(json, $("#regexp").value);
     }
