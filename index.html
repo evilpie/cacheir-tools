@@ -14,8 +14,14 @@
 
 <form>
 <input type=file id="file"><br>
-<label>Path filter: <input type=text id="regexp"></label><br>
-<label>Type filter: <select id="types-select" multiple></select></label>
+<label>Path filter: <input type=text id="regexp" value="^http|self"></label><br>
+<label>Type filter:
+<select id="types-select" multiple>
+<option value="SetProp">SetProp</option>
+<option value="GetProp">GetProp</option>
+<option value="GetElem">GetElem</option>
+</select>
+</label>
 <button>Analyze</button>
 </form>
 
@@ -41,6 +47,7 @@
 </table>
 
 <h2>Details</h2>
+<span id=clear style="text-decoration: underline; display: block;">Clear</span><br>
 <div id=details></div>
 
 <script>
@@ -71,6 +78,9 @@ function showObjects(objects) {
         </tr>
         <tr>
             <td>Location</td><td>${obj.file}:<b>${obj.line}</b></td>
+        </tr>
+        <tr>
+            <td>Column</td><td>${obj.column}</td>
         </tr>
         <tr>
             <td>PC</td><td>${obj.pc}</td>
@@ -181,10 +191,8 @@ function analyze(objects) {
     $("#stats").innerHTML = `<tr><td>Total</td><td>${objects.length}</td></tr>` ;
     $("#stats").innerHTML += `<tr><td>Failures</td><td>${failures}</td></tr>` ;
 
-    $("#types-select").innerHTML = "";
     for (let [name, count] of types) {
         $("#stats").innerHTML += `<tr><td>${name}</td><td>${count}</td></tr>`;
-        $("#types-select").innerHTML += `<option value="${name}">${name}</option>`;
     }
 
     sortBy($("#property"), objects, obj => {
@@ -211,7 +219,7 @@ function analyze(objects) {
     })
 }
 
-function form(event) {
+$("form").addEventListener("submit", event => {
     const reader = new FileReader()
     reader.onload = (event) => {
         let text = event.target.result;
@@ -225,9 +233,12 @@ function form(event) {
     }
     reader.readAsText($("#file").files[0]);
     event.preventDefault();
-}
-$("form").addEventListener("submit", form);
-$("#types-select").addEventListener("change", form);
+});
+
+$("#clear").addEventListener("click", event => {
+    $("#details").innerHTML = "";
+    event.preventDefault();
+});
 
 </script>
 </body>
