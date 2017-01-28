@@ -34,8 +34,8 @@
 <table id=property-name>
 </table>
 
-<h2>Sorted by other</h2>
-<table id=property-other>
+<h2>Sorted by index</h2>
+<table id=property-index>
 </table>
 
 <h2>IC attached</h2>
@@ -207,7 +207,7 @@ function analyze(objects) {
         return undefined;
     }, 20);
 
-    sortBy($("#property-other"), objects, obj => {
+    sortBy($("#property-index"), objects, obj => {
         if (obj.property.type == "string" || obj.property.type == "symbol")
             return undefined;
 
