@@ -30,8 +30,12 @@
 <table id=stats>
 </table>
 
-<h2>Sorted by Property</h2>
-<table id=property>
+<h2>Sorted by property name</h2>
+<table id=property-name>
+</table>
+
+<h2>Sorted by other</h2>
+<table id=property-other>
 </table>
 
 <h2>IC attached</h2>
@@ -195,13 +199,20 @@ function analyze(objects) {
         $("#stats").innerHTML += `<tr><td>${name}</td><td>${count}</td></tr>`;
     }
 
-    sortBy($("#property"), objects, obj => {
+    sortBy($("#property-name"), objects, obj => {
         if (obj.property.type == "string")
             return obj.property.value;
         if (obj.property.type == "symbol")
             return `Symbol(${obj.property.value})`
         return undefined;
     }, 20);
+
+    sortBy($("#property-other"), objects, obj => {
+        if (obj.property.type == "string" || obj.property.type == "symbol")
+            return undefined;
+
+        return obj.property.value;
+    }, 5);
 
     sortBy($("#success"), objects, obj => {
         if (!obj.attached)
