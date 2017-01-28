@@ -149,7 +149,10 @@ function sortBy(table, objects, lookup, limit=10) {
         let td = document.createElement("td");
         td.textContent = `Omitted: ${sorted.length - limit}`;
         let a = document.createElement("a");
-        a.addEventListener("click", () => sortBy(table, objects, lookup, limit * 2));
+        a.addEventListener("click", (event) => {
+            sortBy(table, objects, lookup, limit * 2);
+            event.preventDefault();
+        });
         a.textContent = " (more)";
         a.href = "#";
         td.appendChild(a);
