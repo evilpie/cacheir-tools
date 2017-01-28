@@ -34,11 +34,11 @@
 <table id=property>
 </table>
 
-<h2>Locations</h2>
-<table id=locations>
+<h2>IC attached</h2>
+<table id=success>
 </table>
 
-<h2>Locations where applying an IC failed</h2>
+<h2>IC <b>not</b> attached</h2>
 <table id=failed>
 </table>
 
@@ -203,14 +203,17 @@ function analyze(objects) {
         return undefined;
     }, 20);
 
-    sortBy($("#failed"), objects, obj => {
-        if (obj.attached)
+    sortBy($("#success"), objects, obj => {
+        if (!obj.attached)
             return undefined;
 
         return `${obj.file}:${obj.line} (pc: ${obj.pc})`;
     });
 
-    sortBy($("#locations"), objects, obj => {
+    sortBy($("#failed"), objects, obj => {
+        if (obj.attached)
+            return undefined;
+
         return `${obj.file}:${obj.line} (pc: ${obj.pc})`;
     });
 
