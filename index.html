@@ -7,6 +7,10 @@
 #details > table {
     margin-bottom: 1em;
 }
+
+#msg {
+    color: red;
+}
 </style>
 </head>
 <body>
@@ -24,6 +28,8 @@
 </label>
 <button>Analyze</button>
 </form>
+
+<div id=msg></div>
 
 <h1>Result<h1>
 <h2>Stats</h2>
@@ -240,12 +246,22 @@ $("form").addEventListener("submit", event => {
     const reader = new FileReader()
     reader.onload = (event) => {
         let text = event.target.result;
-        // Sometimes the destructor doesn't seem to run
-        if (!text.endsWith("]")) {
-            text = text + "]";
+
+        const msg = $("#msg");
+        msg.textContent = "";
+
+        let json;
+        try {
+            json = JSON.parse(text);
+        } catch (e) {
+            try {
+                text = text.slice(0, text.lastIndexOf("},\n{")) + "}]";
+                json = JSON.parse(text);
+            } catch (e) {}
+
+            msg.textContent = "File was corrupt, tried to truncate";
         }
 
-        const json = JSON.parse(text);
         analyze(json);
     }
     reader.readAsText($("#file").files[0]);
