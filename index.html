@@ -18,7 +18,7 @@
 
 <form>
 <input type=file id="file"><br>
-<label>Path filter: <input type=text id="regexp" value="^http|self"></label><br>
+<label>Path filter: <input type=text id="regexp" value="^http|self|file"></label><br>
 <label>Type filter:
 <select id="types-select" multiple>
 <option value="SetProp">SetProp</option>
@@ -58,6 +58,10 @@
 <table id=kinds>
 </table>
 
+<h2>IC Modes</h2>
+<table id=modes>
+</table>
+
 <h2>Details</h2>
 <span id=clear style="text-decoration: underline; display: block;">Clear</span><br>
 <div id=details></div>
@@ -81,12 +85,21 @@ class DefaultMap extends Map {
   }
 }
 
+const MODES = [
+    "Specialized",
+    "Megamorphic",
+    "Generic"
+];
+
 function showObjects(objects) {
     function showObject(obj) {
         let table = document.createElement("table");
         table.innerHTML = `
         <tr>
             <td>Type</td><td>${obj.name} <b>${obj.attached ? obj.attached : ""}</b><td>
+        </tr>
+        <tr>
+            <td>Mode</td><td>${MODES[obj.mode]}</td>
         </tr>
         <tr>
             <td>Location</td><td>${obj.file}:<b>${obj.line}</b></td>
@@ -241,7 +254,11 @@ function analyze(objects) {
 
     sortBy($("#kinds"), objects, obj => {
         return obj.attached;
-    })
+    });
+
+    sortBy($("#modes"), objects, obj => {
+        return MODES[obj.mode];
+    });
 }
 
 $("form").addEventListener("submit", event => {
