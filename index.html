@@ -18,7 +18,7 @@
 
 <form>
 <input type=file id="file"><br>
-<label>Path filter: <input type=text id="regexp" value="^http|self|file"></label><br>
+<label>Path filter: <input type=text id="regexp"></label><br>
 <label>Type filter:
 <select id="types-select" multiple>
 <option value="SetProp">SetProp</option>
@@ -26,6 +26,7 @@
 <option value="GetElem">GetElem</option>
 <option value="SetElem">SetElem</option>
 <option value="In">In</option>
+<option value="HasOwn">HasOwn</option>
 </select>
 </label>
 <button>Analyze</button>
