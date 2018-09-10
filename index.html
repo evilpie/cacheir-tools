@@ -124,13 +124,23 @@ function showObjects(objects) {
         <tr>
             <td>PC</td><td>${obj.pc}</td>
         </tr>
-        <tr>
-            <td>Property</td><td><i>${obj.property.type}</i> ${obj.property.value !== undefined ? obj.property.value : ""}</td>
-        </tr>
-        <tr>
-            <td>Base</td><td><i>${obj.base.type}</i> ${obj.base.value !== undefined ? obj.base.value : ""}</td>
-        </tr>
         `;
+
+        if (obj.property !== undefined) {
+            table.innerHTML += `
+            <tr>
+                <td>Property</td><td><i>${obj.property.type}</i> ${obj.property.value !== undefined ? obj.property.value : ""}</td>
+            </tr>
+            `;
+        }
+
+        if (obj.base !== undefined) {
+            table.innerHTML += `
+            <tr>
+                <td>Base</td><td><i>${obj.base.type}</i> ${obj.base.value !== undefined ? obj.base.value : ""}</td>
+            </tr>
+            `;
+        }
         if (!obj.attached)
             table.style.backgroundColor = "#f48d73";
         return table;
