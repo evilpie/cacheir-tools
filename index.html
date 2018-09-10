@@ -262,14 +262,14 @@ function analyze(objects) {
         if (!obj.attached)
             return undefined;
 
-        return `${obj.file}:${obj.line} (pc: ${obj.pc})`;
+        return `${obj.name} ${obj.file}:${obj.line} (pc: ${obj.pc})`;
     });
 
     sortBy($("#failed"), objects, obj => {
         if (obj.attached)
             return undefined;
 
-        return `${obj.file}:${obj.line} (pc: ${obj.pc})`;
+        return `${obj.name} ${obj.file}:${obj.line} (pc: ${obj.pc})`;
     });
 
     sortBy($("#kinds"), objects, obj => {
