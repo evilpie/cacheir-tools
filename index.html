@@ -91,7 +91,12 @@ form div {
 
 <h1>Result<h1>
 <h2>Stats</h2>
-<table id=stats>
+<table>
+<tr>
+    <th>IC</th><th>Success</th><th>Failure</th>
+</tr>
+<tbody id=stats>
+</tbody>
 </table>
 
 <h2>Sorted by property name</h2>
@@ -261,8 +266,7 @@ function sortBy(table, objects, lookup, limit=10) {
 }
 
 function analyze(objects) {
-    let types = new DefaultMap(() => 0);
-    let failures = 0
+    let types = new DefaultMap(() => ({success: 0, failure: 0}));
 
     let regexp = new RegExp($("#regexp").value);
     let selected = $("#types-select").selectedOptions;
@@ -285,19 +289,29 @@ function analyze(objects) {
         return true;
     });
 
+    let failures = 0, successes = 0;
     for (let object of objects) {
-        types.set(object.name, types.get(object.name) + 1);
-
         if (!object.attached) {
+            types.get(object.name).failure++;
             failures++;
+        } else {
+            types.get(object.name).success++;
+            successes++;
         }
     }
 
-    $("#stats").innerHTML = `<tr><td>Total</td><td>${objects.length}</td></tr>` ;
-    $("#stats").innerHTML += `<tr><td>Failures</td><td>${failures}</td></tr>` ;
+    $("#stats").innerHTML = "";
 
-    for (let [name, count] of types) {
-        $("#stats").innerHTML += `<tr><td>${name}</td><td>${count}</td></tr>`;
+    for (let [name, {success, failure}] of types) {
+        let tr = document.createElement("tr");
+        tr.innerHTML = `<td>${name}</td><td>${success}</td><td>${failure}</td>`
+        $("#stats").append(tr);
+    }
+
+    {
+        let tr = document.createElement("tr");
+        tr.innerHTML = `<td><b>Total</b></td><td>${successes}</td><td>${failures}</td>`
+        $("#stats").append(tr);
     }
 
     sortBy($("#property-name"), objects, obj => {
