@@ -225,6 +225,9 @@ function analyze(objects) {
     }
 
     sortBy($("#property-name"), objects, obj => {
+        if (obj.property === undefined)
+            return undefined;
+
         if (obj.property.type == "string")
             return obj.property.value;
         if (obj.property.type == "symbol")
@@ -233,6 +236,9 @@ function analyze(objects) {
     }, 20);
 
     sortBy($("#property-index"), objects, obj => {
+        if (obj.property === undefined)
+            return undefined;
+
         if (obj.property.type == "string" || obj.property.type == "symbol")
             return undefined;
 
