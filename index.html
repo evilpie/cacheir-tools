@@ -4,6 +4,21 @@
 <meta charset="utf-8">
 <title>CacheIR Analyzer</title>
 <style>
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    background-color: #f8f9fa;
+}
+
+body {
+    font-family: sans-serif;
+    margin: 2em;
+}
+
+
 #details > table {
     margin-bottom: 1em;
 }
@@ -11,38 +26,65 @@
 #msg {
     color: red;
 }
+
+label {
+    display: block;
+    font-size: 120%;
+    padding-bottom: 0.2em;
+}
+
+input[type=text], select {
+    width: 20em;
+}
+
+form div {
+    padding-bottom: 0.4em;
+}
+
+#clear {
+    color: inherit;
+}
 </style>
 </head>
 <body>
 <h1>CacheIR Analyzer</h1>
 
 <form>
-<input type=file id="file"><br>
-<label>Path filter: <input type=text id="regexp"></label><br>
-<label>Type filter:
-<select id="types-select" multiple>
-    <option value="BinaryArith">BinaryArith</option>
-    <option value="BindName">BindName</option>
-    <option value="Call">Call</option>
-    <option value="Compare">Compare</option>
-    <option value="GetElem">GetElem</option>
-    <option value="GetIntrinsic">GetIntrinsic</option>
-    <option value="GetIterator">GetIterator</option>
-    <option value="GetName">GetName</option>
-    <option value="GetProp">GetProp</option>
-    <option value="GetPropSuper">GetPropSuper</option>
-    <option value="HasOwn">HasOwn</option>
-    <option value="In">In</option>
-    <option value="InstanceOf">InstanceOf</option>
-    <option value="NewObject">NewObject</option>
-    <option value="SetElem">SetElem</option>
-    <option value="SetProp">SetProp</option>
-    <option value="SetProp">SetProp</option>
-    <option value="ToBool">ToBool</option>
-    <option value="UnaryArith">UnaryArith</option>
-</select>
-</label>
-<button>Analyze</button>
+<div>
+    <label for="file">Log file</label>
+    <input type=file id="file">
+</div>
+<div>
+    <label for="regexp">Path filter</label>
+    <input type=text id="regexp">
+</div>
+<div>
+    <label for="types-select">Type filter</label>
+    <select id="types-select" multiple size="8">
+        <option value="BinaryArith">BinaryArith</option>
+        <option value="BindName">BindName</option>
+        <option value="Call">Call</option>
+        <option value="Compare">Compare</option>
+        <option value="GetElem">GetElem</option>
+        <option value="GetIntrinsic">GetIntrinsic</option>
+        <option value="GetIterator">GetIterator</option>
+        <option value="GetName">GetName</option>
+        <option value="GetProp">GetProp</option>
+        <option value="GetPropSuper">GetPropSuper</option>
+        <option value="HasOwn">HasOwn</option>
+        <option value="In">In</option>
+        <option value="InstanceOf">InstanceOf</option>
+        <option value="NewObject">NewObject</option>
+        <option value="SetElem">SetElem</option>
+        <option value="SetProp">SetProp</option>
+        <option value="SetProp">SetProp</option>
+        <option value="ToBool">ToBool</option>
+        <option value="UnaryArith">UnaryArith</option>
+    </select>
+</div>
+<div>
+    <button>Analyze</button>
+</div>
 </form>
 
 <div id=msg></div>
@@ -77,7 +119,7 @@
 </table>
 
 <h2>Details</h2>
-<span id=clear style="text-decoration: underline; display: block;">Clear</span><br>
+<a href="#" id="clear">Clear</a>
 <div id=details></div>
 
 <script>
@@ -126,21 +168,20 @@ function showObjects(objects) {
         </tr>
         `;
 
-        if (obj.property !== undefined) {
+        function formatValue(name) {
+            let value = obj[name.toLowerCase()];
+            if (value == undefined)
+                return;
+
             table.innerHTML += `
             <tr>
-                <td>Property</td><td><i>${obj.property.type}</i> ${obj.property.value !== undefined ? obj.property.value : ""}</td>
+                <td>${name}</td><td><i>${value.type}</i> ${value.value !== undefined ? value.value : ""}</td>
             </tr>
             `;
         }
 
-        if (obj.base !== undefined) {
-            table.innerHTML += `
-            <tr>
-                <td>Base</td><td><i>${obj.base.type}</i> ${obj.base.value !== undefined ? obj.base.value : ""}</td>
-            </tr>
-            `;
-        }
+        formatValue("Property");
+        formatValue("Base");
 
         if (obj.op !== undefined) {
             table.innerHTML += `
@@ -149,6 +190,9 @@ function showObjects(objects) {
             </tr>
             `;
         }
+
+        formatValue("LHS");
+        formatValue("RHS");
 
         if (!obj.attached)
             table.style.backgroundColor = "#f48d73";
@@ -201,13 +245,13 @@ function sortBy(table, objects, lookup, limit=10) {
 
     if (sorted.length > limit) {
         let td = document.createElement("td");
-        td.textContent = `Omitted: ${sorted.length - limit}`;
+        td.textContent = `Omitted: ${sorted.length - limit} `;
         let a = document.createElement("a");
         a.addEventListener("click", (event) => {
             sortBy(table, objects, lookup, limit * 2);
             event.preventDefault();
         });
-        a.textContent = " (more)";
+        a.textContent = "(more)";
         a.href = "#";
         td.appendChild(a);
         let tr = document.createElement("tr");
