@@ -21,12 +21,25 @@
 <label>Path filter: <input type=text id="regexp"></label><br>
 <label>Type filter:
 <select id="types-select" multiple>
-<option value="SetProp">SetProp</option>
-<option value="GetProp">GetProp</option>
-<option value="GetElem">GetElem</option>
-<option value="SetElem">SetElem</option>
-<option value="In">In</option>
-<option value="HasOwn">HasOwn</option>
+    <option value="BinaryArith">BinaryArith</option>
+    <option value="BindName">BindName</option>
+    <option value="Call">Call</option>
+    <option value="Compare">Compare</option>
+    <option value="GetElem">GetElem</option>
+    <option value="GetIntrinsic">GetIntrinsic</option>
+    <option value="GetIterator">GetIterator</option>
+    <option value="GetName">GetName</option>
+    <option value="GetProp">GetProp</option>
+    <option value="GetPropSuper">GetPropSuper</option>
+    <option value="HasOwn">HasOwn</option>
+    <option value="In">In</option>
+    <option value="InstanceOf">InstanceOf</option>
+    <option value="NewObject">NewObject</option>
+    <option value="SetElem">SetElem</option>
+    <option value="SetProp">SetProp</option>
+    <option value="SetProp">SetProp</option>
+    <option value="ToBool">ToBool</option>
+    <option value="UnaryArith">UnaryArith</option>
 </select>
 </label>
 <button>Analyze</button>
@@ -111,13 +124,32 @@ function showObjects(objects) {
         <tr>
             <td>PC</td><td>${obj.pc}</td>
         </tr>
-        <tr>
-            <td>Property</td><td><i>${obj.property.type}</i> ${obj.property.value !== undefined ? obj.property.value : ""}</td>
-        </tr>
-        <tr>
-            <td>Base</td><td><i>${obj.base.type}</i> ${obj.base.value !== undefined ? obj.base.value : ""}</td>
-        </tr>
         `;
+
+        if (obj.property !== undefined) {
+            table.innerHTML += `
+            <tr>
+                <td>Property</td><td><i>${obj.property.type}</i> ${obj.property.value !== undefined ? obj.property.value : ""}</td>
+            </tr>
+            `;
+        }
+
+        if (obj.base !== undefined) {
+            table.innerHTML += `
+            <tr>
+                <td>Base</td><td><i>${obj.base.type}</i> ${obj.base.value !== undefined ? obj.base.value : ""}</td>
+            </tr>
+            `;
+        }
+
+        if (obj.op !== undefined) {
+            table.innerHTML += `
+            <tr>
+                <td>Operation</td><td><i>${obj.op}</td>
+            </tr>
+            `;
+        }
+
         if (!obj.attached)
             table.style.backgroundColor = "#f48d73";
         return table;
@@ -225,6 +257,9 @@ function analyze(objects) {
     }
 
     sortBy($("#property-name"), objects, obj => {
+        if (obj.property === undefined)
+            return undefined;
+
         if (obj.property.type == "string")
             return obj.property.value;
         if (obj.property.type == "symbol")
@@ -233,6 +268,9 @@ function analyze(objects) {
     }, 20);
 
     sortBy($("#property-index"), objects, obj => {
+        if (obj.property === undefined)
+            return undefined;
+
         if (obj.property.type == "string" || obj.property.type == "symbol")
             return undefined;
 
@@ -243,14 +281,14 @@ function analyze(objects) {
         if (!obj.attached)
             return undefined;
 
-        return `${obj.file}:${obj.line} (pc: ${obj.pc})`;
+        return `${obj.name} ${obj.file}:${obj.line} (pc: ${obj.pc})`;
     });
 
     sortBy($("#failed"), objects, obj => {
         if (obj.attached)
             return undefined;
 
-        return `${obj.file}:${obj.line} (pc: ${obj.pc})`;
+        return `${obj.name} ${obj.file}:${obj.line} (pc: ${obj.pc})`;
     });
 
     sortBy($("#kinds"), objects, obj => {
