@@ -141,6 +141,15 @@ function showObjects(objects) {
             </tr>
             `;
         }
+
+        if (obj.op !== undefined) {
+            table.innerHTML += `
+            <tr>
+                <td>Operation</td><td><i>${obj.op}</td>
+            </tr>
+            `;
+        }
+
         if (!obj.attached)
             table.style.backgroundColor = "#f48d73";
         return table;
