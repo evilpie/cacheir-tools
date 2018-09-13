@@ -76,11 +76,14 @@ function showObjects(objects) {
 
     let details = $("#details");
     details.innerHTML = "";
+
+    let fragment = document.createDocumentFragment();
     for (let obj of objects) {
         let table = showObject(obj);
-        details.appendChild(table);
+        fragment.appendChild(table);
     }
 
+    details.appendChild(fragment);
     details.scrollIntoView(true);
 }
 
