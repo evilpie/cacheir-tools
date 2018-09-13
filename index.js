@@ -176,7 +176,37 @@ function analyze(objects) {
 
     for (let [name, {success, failure}] of types) {
         let tr = document.createElement("tr");
-        tr.innerHTML = `<td>${name}</td><td>${success}</td><td>${failure}</td>`
+
+        let td = document.createElement("td");
+        td.textContent = name;
+        tr.append(td);
+
+        td = document.createElement("td");
+        let a = document.createElement("a");
+        a.addEventListener("click", event => {
+            showObjects(objects.filter(object => {
+                return object.name === name && object.attached !== undefined;
+            }))
+            event.preventDefault();
+        });
+        a.href = "#";
+        a.textContent = success;
+        td.append(a);
+        tr.append(td);
+
+        td = document.createElement("td");
+        a = document.createElement("a");
+        a.addEventListener("click", event => {
+            showObjects(objects.filter(object => {
+                return object.name === name && object.attached === undefined;
+            }))
+            event.preventDefault();
+        });
+        a.href = "#";
+        a.textContent = failure;
+        td.append(a);
+        tr.append(td);
+
         $("#stats").append(tr);
     }
 
