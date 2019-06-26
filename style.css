@@ -1,0 +1,56 @@
+* {
+    box-sizing: border-box;
+}
+
+html {
+    background-color: #f8f9fa;
+}
+
+body {
+    font-family: sans-serif;
+    margin: 2em;
+}
+
+
+#details > table {
+    margin-bottom: 1em;
+}
+
+#msg {
+    color: red;
+}
+
+label {
+    display: block;
+    font-size: 120%;
+    padding-bottom: 0.2em;
+}
+
+input[type=text], select {
+    width: 20em;
+}
+
+form div {
+    padding-bottom: 0.4em;
+}
+
+#clear {
+    color: inherit;
+}
+
+.cacheir-inst-td {
+  vertical-align: top;
+}
+
+.op-td, .arg-td {
+  padding-right: 0.5em;
+}
+
+.cacheir-inst-seq-table {
+  padding-top: 1.0em;
+  padding-bottom: 1.0em;
+}
+
+.cacheir-inst-seq-table .op-td, .cacheir-inst-seq-table .arg-td {
+  text-align: left;
+}

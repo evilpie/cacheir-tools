@@ -22,9 +22,58 @@ const MODES = [
     "Generic"
 ];
 
+// Helper function to generate the HTML string of a table element containing
+// information read from the cacheIR instruction sequence log JSON.
+function generateCacheIRInstructionTable(cacheIRArray) {
+
+  let cacheIRstr = "";
+  cacheIRstr += '<table class="cacheir-inst-seq-table">'
+  cacheIRstr += '<tbody class="cacheir-inst-seq-tbody">'
+
+  // The JSON of the cacheIR instruction sequence logs contains arrays of
+  // objects. Below gets each element of the array, appends the operation value
+  // to the string of HTML.
+  cacheIRArray.forEach((elt) => {
+    cacheIRstr += '<tr class="cacheir-inst-seq-tr">'
+    cacheIRstr += '<td class="op-td">'+elt.op + '</td>';
+
+    // The value of the args property of the cacheIR instruction sequence JSON
+    // is also an array. Here, for each element of the array, we append the
+    // property and value to  the string of HTML that will be injected into the
+    // page.
+    elt.args.forEach((arg) => {
+        if( arg.hasOwnProperty('Id')
+            || arg.hasOwnProperty('Field') ) {
+
+          cacheIRstr += '<td class="arg-td">'
+            +Object.entries(arg).join('').replace(',', '') + '</td>';
+        }
+        else {
+          let key = Object.getOwnPropertyNames(arg);
+          if( key.length > 0 ){
+            key = key[0];
+
+            // If the argument property is "Word", convert the integer value
+            // to hex, otherwise just print the integer value.
+            cacheIRstr += '<td class="arg-td">'
+                +key
+                +(( key.toLowerCase() === "word" ) ?
+                  '(0x'+parseInt(arg[key], 10).toString(16)+')'+'</td>'
+                : '('+parseInt(arg[key], 10)+')'+'</td>');
+          }
+        }
+    });
+    cacheIRstr += "</tr>"
+  });
+  cacheIRstr += "</tbody>"
+  cacheIRstr += "</table>"
+  return cacheIRstr;
+}
+
 function showObjects(objects) {
     function showObject(obj) {
         let table = document.createElement("table");
+
         table.innerHTML = `
         <tr>
             <td>Type</td><td>${obj.name} <b>${obj.attached ? obj.attached : ""}</b><td>
@@ -40,6 +89,10 @@ function showObjects(objects) {
         </tr>
         <tr>
             <td>PC</td><td>${obj.pc}</td>
+        </tr>
+        <tr>
+            <td class="cacheir-inst-td">Instructions</td><td>${obj.cacheIR ?
+              generateCacheIRInstructionTable(obj.cacheIR) : ""}</td>
         </tr>
         `;
 
