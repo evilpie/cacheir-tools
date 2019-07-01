@@ -42,15 +42,12 @@ function generateCacheIRInstructionTable(cacheIRArray) {
     // property and value to  the string of HTML that will be injected into the
     // page.
     elt.args.forEach((arg) => {
-        if( arg.hasOwnProperty('Id')
-            || arg.hasOwnProperty('Field') ) {
-
+        if (arg.hasOwnProperty('Id') || arg.hasOwnProperty('Field')) {
           cacheIRstr += '<td class="arg-td">'
             +Object.entries(arg).join('').replace(',', '') + '</td>';
-        }
-        else {
+        } else {
           let key = Object.getOwnPropertyNames(arg);
-          if( key.length > 0 ){
+          if (key.length > 0) {
             key = key[0];
 
             // If the argument property is "Word", convert the integer value
@@ -63,8 +60,10 @@ function generateCacheIRInstructionTable(cacheIRArray) {
           }
         }
     });
+
     cacheIRstr += "</tr>"
   });
+
   cacheIRstr += "</tbody>"
   cacheIRstr += "</table>"
   return cacheIRstr;
