@@ -22,51 +22,29 @@ const MODES = [
     "Generic"
 ];
 
-// Helper function to generate the HTML string of a table element containing
-// information read from the cacheIR instruction sequence log JSON.
-function generateCacheIRInstructionTable(cacheIRArray) {
+function formatCacheIRInstructions(cacheIR) {
+    let table = document.createElement("table");
+    table.classList = "cacheir-instructions";
 
-  let cacheIRstr = "";
-  cacheIRstr += '<table class="cacheir-inst-seq-table">'
-  cacheIRstr += '<tbody class="cacheir-inst-seq-tbody">'
+    for (const instruction of cacheIR) {
+        let tr = document.createElement("tr");
 
-  // The JSON of the cacheIR instruction sequence logs contains arrays of
-  // objects. Below gets each element of the array, appends the operation value
-  // to the string of HTML.
-  cacheIRArray.forEach((elt) => {
-    cacheIRstr += '<tr class="cacheir-inst-seq-tr">'
-    cacheIRstr += '<td class="op-td">'+elt.op + '</td>';
+        // First column the CacheIR OP name
+        let op = document.createElement("td");
+        op.textContent = instruction.op;
+        tr.append(op);
 
-    // The value of the args property of the cacheIR instruction sequence JSON
-    // is also an array. Here, for each element of the array, we append the
-    // property and value to  the string of HTML that will be injected into the
-    // page.
-    elt.args.forEach((arg) => {
-        if (arg.hasOwnProperty('Id') || arg.hasOwnProperty('Field')) {
-          cacheIRstr += '<td class="arg-td">'
-            +Object.entries(arg).join('').replace(',', '') + '</td>';
-        } else {
-          let key = Object.getOwnPropertyNames(arg);
-          if (key.length > 0) {
-            key = key[0];
-
-            // If the argument property is "Word", convert the integer value
-            // to hex, otherwise just print the integer value.
-            cacheIRstr += '<td class="arg-td">'
-                +key
-                +(( key.toLowerCase() === "word" ) ?
-                  '(0x'+parseInt(arg[key], 10).toString(16)+')'+'</td>'
-                : '('+parseInt(arg[key], 10)+')'+'</td>');
-          }
+        // Following all the arguments with value and type
+        for (const arg of instruction.args) {
+            let td = document.createElement("td");
+            td.textContent = `${arg.name} ${arg.value} (${arg.type})`;
+            tr.append(td);
         }
-    });
 
-    cacheIRstr += "</tr>"
-  });
+        table.append(tr);
+    }
 
-  cacheIRstr += "</tbody>"
-  cacheIRstr += "</table>"
-  return cacheIRstr;
+    return table.outerHTML;
 }
 
 function showObjects(objects) {
@@ -90,8 +68,10 @@ function showObjects(objects) {
             <td>PC</td><td>${obj.pc}</td>
         </tr>
         <tr>
-            <td class="cacheir-inst-td">Instructions</td><td>${obj.cacheIR ?
-              generateCacheIRInstructionTable(obj.cacheIR) : ""}</td>
+            <td>Instructions</td>
+        </tr>
+        <tr>
+            <td colspan="2">${formatCacheIRInstructions(obj.cacheIR)}</td>
         </tr>
         `;
 
