@@ -26,6 +26,10 @@ function formatCacheIRInstructions(cacheIR) {
     let table = document.createElement("table");
     table.classList = "cacheir-instructions";
 
+    if (!cacheIR) {
+        return table.outerHTML;
+    }
+
     for (const instruction of cacheIR) {
         let tr = document.createElement("tr");
 
