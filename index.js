@@ -114,6 +114,8 @@ function showObjects(objects) {
         formatValue("Base");
 
         formatValue("Argc");
+        formatValue("Arg1");
+        formatValue("Arg0");
         formatValue("Callee");
         formatValue("ThisVal");
 
