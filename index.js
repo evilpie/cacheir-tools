@@ -79,20 +79,43 @@ function showObjects(objects) {
         </tr>
         `;
 
-        function formatValue(name) {
-            let value = obj[name.toLowerCase()];
+        function formatValue(fieldName) {
+            let value = obj[fieldName.toLowerCase()];
             if (value == undefined)
                 return;
 
-            table.innerHTML += `
-            <tr>
-                <td>${name}</td><td><i>${value.type}</i> ${value.value !== undefined ? value.value : ""}</td>
-            </tr>
-            `;
+            var name = document.createElement("td");
+            name.textContent = fieldName;
+
+            var content = document.createElement("td");
+
+            var type = document.createElement("i");
+            type.textContent = value.type;
+            content.append(type);
+
+            if (value.value !== undefined) {
+                content.append(" ");
+                content.append(value.value);
+            }
+
+            if (value.funName) {
+                content.append(document.createElement("br"));
+                content.append("name: ")
+                content.append(value.funName);
+            }
+
+            var tr = document.createElement("tr");
+            tr.append(name);
+            tr.append(content);
+            table.append(tr);
         }
 
         formatValue("Property");
         formatValue("Base");
+
+        formatValue("Argc");
+        formatValue("Callee");
+        formatValue("ThisVal");
 
         if (obj.op !== undefined) {
             table.innerHTML += `
@@ -175,6 +198,8 @@ function sortBy(table, objects, lookup, limit=10) {
 }
 
 function analyze(objects) {
+    $("#details").innerHTML = "";
+
     let regexp = new RegExp($("#regexp").value);
     let selected = $("#types-select").selectedOptions;
 
@@ -271,6 +296,10 @@ function analyze(objects) {
             return undefined;
 
         return obj.property.value;
+    }, 5);
+
+    sortBy($("#function-name"), objects, obj => {
+        return obj?.callee?.funName;
     }, 5);
 
     sortBy($("#success"), objects, obj => {
