@@ -37,7 +37,11 @@ form div {
 }
 
 #clear {
-    color: inherit;
+    color: #2581ea;
+    text-decoration: none;
+}
+#clear:hover {
+    text-decoration: underline;
 }
 
 .cacheir-inst-td {

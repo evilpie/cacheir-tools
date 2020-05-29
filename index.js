@@ -203,10 +203,15 @@ function analyze(objects) {
     $("#details").innerHTML = "";
 
     let regexp = new RegExp($("#regexp").value);
+    let attached = $("#attached-filter").value;
     let selected = $("#types-select").selectedOptions;
 
     objects = objects.filter(obj => {
         if (!regexp.test(obj.file)) {
+            return false;
+        }
+
+        if (attached && (!obj.attached || !obj.attached.includes(attached))) {
             return false;
         }
 
