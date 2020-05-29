@@ -16,6 +16,9 @@ for ic in data:
   if not 'attached' in ic:
     continue
 
+  if not 'pc' in ic:
+    continue
+
   #print("{} {} {}".format(ic['name'], ic['pc'], ic['attached']))
 
   attached[ic['pc']].append((ic['name'], ic['attached']))
