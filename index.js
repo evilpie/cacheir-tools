@@ -345,14 +345,17 @@ $("form").addEventListener("submit", event => {
             json = JSON.parse(text);
         } catch (e) {
             try {
-                text = text.slice(0, text.lastIndexOf("},\n{")) + "}]";
+                text = text.slice(0, text.lastIndexOf(`\n    "name":`)) + "}]";
                 json = JSON.parse(text);
-            } catch (e) {}
-
-            msg.textContent = "File was corrupt, tried to truncate";
+                msg.textContent = "File was corrupt, truncated";
+            } catch (e) {
+                msg.textContent = e.toString();
+            }
         }
 
-        analyze(json);
+        if (json) {
+            analyze(json);
+        }
     }
     reader.readAsText($("#file").files[0]);
     event.preventDefault();
